@@ -1,0 +1,27 @@
+.stats {
+  display: flex;
+  justify-content: space-around;
+  position: absolute;
+  width: 100%;
+  bottom: 5px;
+}
+
+.stats-item {
+  display: flex;
+  align-items: center;
+  color: rgb(236, 232, 232, 0.8);
+  font-size: 15px;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: rgba(41, 41, 41, 0.7);
+  cursor: pointer;
+
+  &:hover {
+     color: rgba(168, 158, 158, 0.8);
+  }
+}
+
+.material-icons {
+  margin-right: 3px;
+  font-size: 15px;
+}
