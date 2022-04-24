@@ -1,0 +1,16 @@
+.load-more {
+   height: 40px;
+   width: 250px;
+   padding: 10px;
+   border-radius: 20px;
+   margin: 20px auto 0;
+
+   display: block;
+   border: none;
+   background-color: #eea545;
+
+   &:hover,
+   &:focus {
+     background-color: #e29126;
+   }
+}

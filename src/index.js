@@ -23,4 +23,9 @@ const onSubmit = e => {
     .catch(console.log);
 };
 
+const handleLoadMore = () => {
+   
+}
+
 refs.form.addEventListener('submit', onSubmit);
+refs.loadMore.addEventListener("click", handleLoadMore);
