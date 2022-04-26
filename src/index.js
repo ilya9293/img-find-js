@@ -25,10 +25,15 @@ const onSubmit = e => {
   valueInputForm = e.currentTarget.query.value;
   clickLoadMoreBtn = 1;
   const urlParams = getUrlParams();
+  if (!valueInputForm) {
+    console.log('None');
+    return;
+  }
 
   fetchImages(`${BASE_URL}?${urlParams}`)
     .then(data => {
       refs.list.innerHTML = renderCards(data);
+      refs.loadMore.classList.remove('visually-hidden');
     })
     .catch(console.log);
 };
@@ -36,10 +41,20 @@ const onSubmit = e => {
 const handleLoadMore = () => {
   clickLoadMoreBtn += 1;
   const urlParams = getUrlParams();
+  refs.loadMore.setAttribute('disabled', '');
 
   fetchImages(`${BASE_URL}?${urlParams}`)
     .then(data => {
+      const firstElem = data.hits[0].id;
+
       refs.list.insertAdjacentHTML('beforeend', renderCards(data));
+      refs.loadMore.removeAttribute('disabled');
+
+      const elemForScrol = document.getElementById(firstElem);
+      elemForScrol.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     })
     .catch(console.log);
 };
