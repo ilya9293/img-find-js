@@ -1,8 +1,9 @@
 import './sass/main.scss';
 import refs from './js/data/refs';
 import fetchImages from './js/services/apiService';
-
 import renderCards from './templates/card-img.hbs';
+import alert from './js/vendors/alert';
+import elemForScroll from './js/services/elem-for-scroll';
 
 const BASE_URL = ' https://pixabay.com/api/';
 let clickLoadMoreBtn = 1;
@@ -26,16 +27,19 @@ const onSubmit = e => {
   clickLoadMoreBtn = 1;
   const urlParams = getUrlParams();
   if (!valueInputForm) {
-    console.log('None');
+    alert('Error', "The string isn't should be empty");
     return;
   }
 
   fetchImages(`${BASE_URL}?${urlParams}`)
     .then(data => {
+      if (!data.total) {
+        throw new Error('Not Found');
+      }
       refs.list.innerHTML = renderCards(data);
       refs.loadMore.classList.remove('visually-hidden');
     })
-    .catch(console.log);
+    .catch(err => alert('Error', 'Not Found'));
 };
 
 const handleLoadMore = () => {
@@ -50,13 +54,9 @@ const handleLoadMore = () => {
       refs.list.insertAdjacentHTML('beforeend', renderCards(data));
       refs.loadMore.removeAttribute('disabled');
 
-      const elemForScrol = document.getElementById(firstElem);
-      elemForScrol.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
+      elemForScroll(firstElem);
     })
-    .catch(console.log);
+    .catch(err => alert('Error', 'Not Found'));
 };
 
 refs.form.addEventListener('submit', onSubmit);
