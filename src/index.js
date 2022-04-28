@@ -4,6 +4,7 @@ import fetchImages from './js/services/apiService';
 import renderCards from './templates/card-img.hbs';
 import alert from './js/vendors/alert';
 import elemForScroll from './js/services/elem-for-scroll';
+import openLargeImg from './js/services/open-large-img';
 
 const BASE_URL = ' https://pixabay.com/api/';
 let clickLoadMoreBtn = 1;
@@ -23,6 +24,7 @@ const getUrlParams = () => {
 
 const onSubmit = e => {
   e.preventDefault();
+  refs.loadMore.removeAttribute('disabled');
   valueInputForm = e.currentTarget.query.value;
   clickLoadMoreBtn = 1;
   const urlParams = getUrlParams();
@@ -36,6 +38,7 @@ const onSubmit = e => {
       if (!data.total) {
         throw new Error('Not Found');
       }
+
       refs.list.innerHTML = renderCards(data);
       refs.loadMore.classList.remove('visually-hidden');
     })
@@ -46,6 +49,10 @@ const handleLoadMore = () => {
   clickLoadMoreBtn += 1;
   const urlParams = getUrlParams();
   refs.loadMore.setAttribute('disabled', '');
+  if (!valueInputForm) {
+    alert('Error', "The string isn't should be empty");
+    return;
+  }
 
   fetchImages(`${BASE_URL}?${urlParams}`)
     .then(data => {
@@ -56,8 +63,28 @@ const handleLoadMore = () => {
 
       elemForScroll(firstElem);
     })
-    .catch(err => alert('Error', 'Not Found'));
+    .catch(err => alert('Finish', 'Not Found'));
+};
+
+const onImage = e => {
+  if (e.target.nodeName !== 'IMG') {
+    return;
+  }
+
+  const idElem = e.target.parentNode.parentNode.getAttribute('id');
+  const urlParams = new URLSearchParams({
+    key: '26909021-bb302c7a297d7b4d207aa52f9',
+    id: idElem,
+  });
+
+  fetchImages(`${BASE_URL}?${urlParams}`)
+    .then(data => {
+      const largeURL = data.hits[0].largeImageURL;
+      openLargeImg(largeURL);
+    })
+    .catch(console.log);
 };
 
 refs.form.addEventListener('submit', onSubmit);
 refs.loadMore.addEventListener('click', handleLoadMore);
+refs.list.addEventListener('click', onImage);
