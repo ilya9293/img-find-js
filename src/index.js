@@ -24,6 +24,7 @@ const getUrlParams = () => {
 
 const onSubmit = e => {
   e.preventDefault();
+  console.log(e);
   //   refs.loadMore.removeAttribute('disabled');
   valueInputForm = e.currentTarget.query.value;
   clickLoadMoreBtn = 1;
@@ -41,27 +42,29 @@ const onSubmit = e => {
 
       refs.list.innerHTML = renderCards(data);
       // refs.loadMore.classList.remove('visually-hidden');
-
       const options = {
-         rootMargin: '100px',
-         threshold: 0.5,
-       };
-       
-       const renderNextItems = ([entry]) => {
-         // clickLoadMoreBtn += 1;
-         const urlParams = getUrlParams();
-       
-         if (entry.isIntersecting) {
-           fetchImages(`${BASE_URL}?${urlParams}`)
-             .then(data => {
-               refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-             })
-             .catch(err => alert('Finish', 'Not Found'));
-         }
-       };
-       
-       const observer = new IntersectionObserver(renderNextItems, options);
-       observer.observe(refs.anchor);
+        rootMargin: '100px',
+        threshold: 0.5,
+      };
+
+      const renderNextItems = ([entry], self) => {
+        console.log(self);
+        if (entry.isIntersecting) {
+          clickLoadMoreBtn += 1;
+          const urlParams = getUrlParams();
+          fetchImages(`${BASE_URL}?${urlParams}`)
+            .then(data => {
+              refs.list.insertAdjacentHTML('beforeend', renderCards(data));
+            })
+            .catch(err => alert('Finish', 'Not Found'));
+          if (clickLoadMoreBtn === 1) {
+            self.disconnect();
+          }
+        }
+      };
+
+      const observer = new IntersectionObserver(renderNextItems, options);
+      observer.observe(refs.anchor);
     })
     .catch(err => alert('Error', 'Not Found'));
 };
@@ -86,8 +89,6 @@ const onSubmit = e => {
 //     })
 //     .catch(err => alert('Finish', 'Not Found'));
 // };
-
-
 
 const onImage = e => {
   if (e.target.nodeName !== 'IMG') {
