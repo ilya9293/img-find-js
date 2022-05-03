@@ -1,6 +1,9 @@
 .search-form {
-  text-align: center;
-  margin-bottom: 25px;
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
 }
 
 .search-form input {

@@ -24,71 +24,73 @@ const getUrlParams = () => {
 
 const onSubmit = e => {
   e.preventDefault();
-  console.log(e);
-  //   refs.loadMore.removeAttribute('disabled');
-  valueInputForm = e.currentTarget.query.value;
-  clickLoadMoreBtn = 1;
-  const urlParams = getUrlParams();
-  if (!valueInputForm) {
+  if (!e.currentTarget.query.value) {
     alert('Error', "The string isn't should be empty");
     return;
   }
+  refs.list.innerHTML = "";
+  refs.loadMore.classList.add('visually-hidden');
+  refs.loadMore.removeAttribute('disabled');
+  clickLoadMoreBtn = 1;
+  valueInputForm = e.currentTarget.query.value;
+  const urlParams = getUrlParams();
 
   fetchImages(`${BASE_URL}?${urlParams}`)
     .then(data => {
       if (!data.total) {
         throw new Error('Not Found');
       }
-
       refs.list.innerHTML = renderCards(data);
-      // refs.loadMore.classList.remove('visually-hidden');
-      const options = {
-        rootMargin: '100px',
-        threshold: 0.5,
-      };
+      refs.loadMore.classList.remove('visually-hidden');
 
-      const renderNextItems = ([entry], self) => {
-        console.log(self);
-        if (entry.isIntersecting) {
-          clickLoadMoreBtn += 1;
-          const urlParams = getUrlParams();
-          fetchImages(`${BASE_URL}?${urlParams}`)
-            .then(data => {
-              refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-            })
-            .catch(err => alert('Finish', 'Not Found'));
-          if (clickLoadMoreBtn === 1) {
-            self.disconnect();
-          }
-        }
-      };
+      // const options = {
+      //   rootMargin: '100px',
+      //   threshold: 0.5,
+      // };
 
-      const observer = new IntersectionObserver(renderNextItems, options);
-      observer.observe(refs.anchor);
+      // const renderNextItems = ([entry], self) => {
+      //   if (entry.isIntersecting) {
+      //     clickLoadMoreBtn += 1;
+      //     const urlParams = getUrlParams();
+      //     fetchImages(`${BASE_URL}?${urlParams}`)
+      //       .then(data => {
+      //         refs.list.insertAdjacentHTML('beforeend', renderCards(data));
+      //       })
+      //       .catch(err => alert('Finish', 'Not Found'));
+      //   }
+      // };
+
+      // const observer = new IntersectionObserver(renderNextItems, options);
+      // observer.observe(refs.anchor);
     })
-    .catch(err => alert('Error', 'Not Found'));
+    .catch(err => {
+      alert('Error', 'Not Found');
+      refs.list.innerHTML = '';
+      refs.loadMore.classList.add('visually-hidden');
+    });
+  e.currentTarget.reset();
 };
 
-// const handleLoadMore = () => {
-//   clickLoadMoreBtn += 1;
-//   const urlParams = getUrlParams();
-//   refs.loadMore.setAttribute('disabled', '');
-//   if (!valueInputForm) {
-//     alert('Error', "The string isn't should be empty");
-//     return;
-//   }
+const handleLoadMore = () => {
+  if (!valueInputForm) {
+    alert('Error', "The string isn't should be empty");
+    return;
+  }
+  clickLoadMoreBtn += 1;
+  const urlParams = getUrlParams();
+  refs.loadMore.setAttribute('disabled', '');
 
-//   fetchImages(`${BASE_URL}?${urlParams}`)
-//     .then(data => {
-//       const firstElem = data.hits[0].id;
+  fetchImages(`${BASE_URL}?${urlParams}`)
+    .then(data => {
+      const firstElem = data.hits[0].id;
 
-//       refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-//       refs.loadMore.removeAttribute('disabled');
+      refs.list.insertAdjacentHTML('beforeend', renderCards(data));
+      refs.loadMore.removeAttribute('disabled');
 
-//       elemForScroll(firstElem);
-//     })
-//     .catch(err => alert('Finish', 'Not Found'));
-// };
+      elemForScroll(firstElem);
+    })
+    .catch(err => alert('Finish', 'Not Found'));
+};
 
 const onImage = e => {
   if (e.target.nodeName !== 'IMG') {
@@ -110,5 +112,5 @@ const onImage = e => {
 };
 
 refs.form.addEventListener('submit', onSubmit);
-// refs.loadMore.addEventListener('click', handleLoadMore);
+refs.loadMore.addEventListener('click', handleLoadMore);
 refs.list.addEventListener('click', onImage);
