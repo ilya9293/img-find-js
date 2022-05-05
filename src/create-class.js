@@ -7,12 +7,12 @@ import openLargeImg from './js/services/open-large-img';
 
 class imageFind {
   #KEY = '26909021-bb302c7a297d7b4d207aa52f9';
+  BASE_URL = ' https://pixabay.com/api/';
 
-  constructor({ url, clickBtn, per_page, value }) {
-    this.BASE_URL = url;
-    this.clickLoadMoreBtn = clickBtn;
+  constructor({ per_page }) {
+    this.clickLoadMoreBtn = 1;
     this.per_page = per_page;
-    this.valueInputForm = value;
+    this.valueInputForm = '';
   }
 
   getUrlParams() {
@@ -27,12 +27,20 @@ class imageFind {
     return urlParams;
   }
 
-  makeVisibleLoadMore () {
-   refs.loadMore.classList.add('visually-hidden');
+  makeVisibleLoadMore() {
+    refs.loadMore.classList.add('visually-hidden');
   }
 
   removeDisabledLoadMore() {
-   refs.loadMore.removeAttribute('disabled');
+    refs.loadMore.removeAttribute('disabled');
+  }
+
+  resetPage() {
+    this.clickLoadMoreBtn = 1;
+  }
+
+  incrementPage() {
+    this.clickLoadMoreBtn += 1;
   }
 
   onSubmit(e) {
@@ -45,7 +53,7 @@ class imageFind {
     this.makeVisibleLoadMore();
     refs.form.classList.add('transparent');
     this.removeDisabledLoadMore();
-    this.clickLoadMoreBtn = 1;
+    this.resetPage();
     this.valueInputForm = e.currentTarget.query.value;
     const urlParams = this.getUrlParams();
 
@@ -70,7 +78,7 @@ class imageFind {
       alert('Error', "The string isn't should be empty");
       return;
     }
-    this.clickLoadMoreBtn += 1;
+    this.incrementPage();
     const urlParams = this.getUrlParams();
     refs.loadMore.setAttribute('disabled', '');
 
@@ -107,10 +115,7 @@ class imageFind {
 }
 
 const img = new imageFind({
-  url: ' https://pixabay.com/api/',
-  clickBtn: 1,
   per_page: 12,
-  value: '',
 });
 
 refs.form.addEventListener('submit', img.onSubmit.bind(img));
