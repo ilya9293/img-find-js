@@ -27,6 +27,14 @@ class imageFind {
     return urlParams;
   }
 
+  makeVisibleLoadMore () {
+   refs.loadMore.classList.add('visually-hidden');
+  }
+
+  removeDisabledLoadMore() {
+   refs.loadMore.removeAttribute('disabled');
+  }
+
   onSubmit(e) {
     e.preventDefault();
     if (!e.currentTarget.query.value) {
@@ -34,9 +42,9 @@ class imageFind {
       return;
     }
     refs.list.innerHTML = '';
-    refs.loadMore.classList.add('visually-hidden');
+    this.makeVisibleLoadMore();
     refs.form.classList.add('transparent');
-    refs.loadMore.removeAttribute('disabled');
+    this.removeDisabledLoadMore();
     this.clickLoadMoreBtn = 1;
     this.valueInputForm = e.currentTarget.query.value;
     const urlParams = this.getUrlParams();
@@ -52,7 +60,7 @@ class imageFind {
       .catch(err => {
         alert('Error', 'Not Found');
         refs.list.innerHTML = '';
-        refs.loadMore.classList.add('visually-hidden');
+        this.makeVisibleLoadMore();
       });
     e.currentTarget.reset();
   }
@@ -71,7 +79,7 @@ class imageFind {
         const firstElem = data.hits[0].id;
 
         refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-        refs.loadMore.removeAttribute('disabled');
+        this.removeDisabledLoadMore();
 
         elemForScroll(firstElem);
       })
