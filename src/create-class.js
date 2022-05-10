@@ -43,6 +43,21 @@ class imageFind {
     this.clickLoadMoreBtn += 1;
   }
 
+  async renderImage(url) {
+    try {
+      const data = await fetchImages(url);
+      if (!data.total) {
+        throw new Error('Not Found');
+      }
+      refs.list.innerHTML = renderCards(data);
+      refs.loadMore.classList.remove('visually-hidden');
+    } catch (error) {
+      alert('Error', 'Not Found');
+      refs.list.innerHTML = '';
+      this.makeVisibleLoadMore();
+    }
+  }
+
   onSubmit(e) {
     e.preventDefault();
     if (!e.currentTarget.query.value) {
@@ -57,20 +72,35 @@ class imageFind {
     this.valueInputForm = e.currentTarget.query.value;
     const urlParams = this.getUrlParams();
 
-    fetchImages(`${this.BASE_URL}?${urlParams}`)
-      .then(data => {
-        if (!data.total) {
-          throw new Error('Not Found');
-        }
-        refs.list.innerHTML = renderCards(data);
-        refs.loadMore.classList.remove('visually-hidden');
-      })
-      .catch(err => {
-        alert('Error', 'Not Found');
-        refs.list.innerHTML = '';
-        this.makeVisibleLoadMore();
-      });
+    this.renderImage(`${this.BASE_URL}?${urlParams}`);
+
+    //   fetchImages(`${this.BASE_URL}?${urlParams}`)
+    //     .then(data => {
+    //       if (!data.total) {
+    //         throw new Error('Not Found');
+    //       }
+    //       refs.list.innerHTML = renderCards(data);
+    //       refs.loadMore.classList.remove('visually-hidden');
+    //     })
+    //     .catch(err => {
+    //       alert('Error', 'Not Found');
+    //       refs.list.innerHTML = '';
+    //       this.makeVisibleLoadMore();
+    //     });
     e.currentTarget.reset();
+  }
+
+  async renderImageLoadMore(url) {
+    try {
+      const data = await fetchImages(url);
+      const firstElem = data.hits[0].id;
+      refs.list.insertAdjacentHTML('beforeend', renderCards(data));
+      this.removeDisabledLoadMore();
+
+      elemForScroll(firstElem);
+    } catch (error) {
+      alert('Finish', 'Not Found');
+    }
   }
 
   handleLoadMore() {
@@ -82,35 +112,46 @@ class imageFind {
     const urlParams = this.getUrlParams();
     refs.loadMore.setAttribute('disabled', '');
 
-    fetchImages(`${this.BASE_URL}?${urlParams}`)
-      .then(data => {
-        const firstElem = data.hits[0].id;
+    this.renderImageLoadMore(`${this.BASE_URL}?${urlParams}`);
 
-        refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-        this.removeDisabledLoadMore();
+    //  fetchImages(`${this.BASE_URL}?${urlParams}`)
+    //    .then(data => {
+    //      const firstElem = data.hits[0].id;
 
-        elemForScroll(firstElem);
-      })
-      .catch(err => alert('Finish', 'Not Found'));
+    //      refs.list.insertAdjacentHTML('beforeend', renderCards(data));
+    //      this.removeDisabledLoadMore();
+
+    //      elemForScroll(firstElem);
+    //    })
+    //    .catch(err => alert('Finish', 'Not Found'));
+  }
+
+  async loadLargeImg(url) {
+    try {
+      const data = await fetchImages(url);
+      const largeURL = data.hits[0].largeImageURL;
+      openLargeImg(largeURL);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   onImage(e) {
     if (e.target.nodeName !== 'IMG') {
       return;
     }
-
     const idElem = e.target.parentNode.parentNode.getAttribute('id');
     const urlParams = new URLSearchParams({
       key: this.#KEY,
       id: idElem,
     });
-
-    fetchImages(`${this.BASE_URL}?${urlParams}`)
-      .then(data => {
-        const largeURL = data.hits[0].largeImageURL;
-        openLargeImg(largeURL);
-      })
-      .catch(console.log);
+    this.loadLargeImg(`${this.BASE_URL}?${urlParams}`);
+    //  fetchImages(`${this.BASE_URL}?${urlParams}`)
+    //    .then(data => {
+    //      const largeURL = data.hits[0].largeImageURL;
+    //      openLargeImg(largeURL);
+    //    })
+    //    .catch(console.log);
   }
 }
 
