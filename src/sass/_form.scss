@@ -3,6 +3,7 @@
 }
 
 .search-form {
+  display: flex;
   position: fixed;
   top: 25px;
   left: 50%;
@@ -22,6 +23,12 @@
   margin-right: 15px;
   border-radius: 20px;
   border: none;
+
+  @media screen and (max-width: 768px) {
+    & {
+      width: 210px;
+    }
+  }
 }
 
 .search-form input:focus {
