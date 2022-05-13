@@ -31,10 +31,6 @@ class imageFind {
     refs.loadMore.classList.add('visually-hidden');
   }
 
-  removeDisabledLoadMore() {
-    refs.loadMore.removeAttribute('disabled');
-  }
-
   resetPage() {
     this.clickLoadMoreBtn = 1;
   }
@@ -42,6 +38,12 @@ class imageFind {
   incrementPage() {
     this.clickLoadMoreBtn += 1;
   }
+
+  normalizeQuery = query => query.toLowerCase().trim();
+
+  disableLoadMore = () => (refs.loadMore.disabled = false);
+
+  enableLoadMore = () => (refs.loadMore.disabled = true);
 
   async renderImage(url) {
     try {
@@ -60,16 +62,18 @@ class imageFind {
 
   onSubmit(e) {
     e.preventDefault();
-    if (!e.currentTarget.query.value) {
+    const query = e.currentTarget.query.value;
+    const normalizedQuery = this.normalizeQuery(query);
+    if (!normalizedQuery) {
       alert('Error', "The string isn't should be empty");
       return;
     }
     refs.list.innerHTML = '';
     this.makeVisibleLoadMore();
     refs.form.classList.add('transparent');
-    this.removeDisabledLoadMore();
+    this.disableLoadMore();
     this.resetPage();
-    this.valueInputForm = e.currentTarget.query.value;
+    this.valueInputForm = e.currentTarget.query.value.trim();
     const urlParams = this.getUrlParams();
 
     this.renderImage(`${this.BASE_URL}?${urlParams}`);
@@ -95,7 +99,7 @@ class imageFind {
       const data = await fetchImages(url);
       const firstElem = data.hits[0].id;
       refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-      this.removeDisabledLoadMore();
+      this.disableLoadMore();
 
       elemForScroll(firstElem);
     } catch (error) {
@@ -110,7 +114,7 @@ class imageFind {
     }
     this.incrementPage();
     const urlParams = this.getUrlParams();
-    refs.loadMore.setAttribute('disabled', '');
+    this.enableLoadMore();
 
     this.renderImageLoadMore(`${this.BASE_URL}?${urlParams}`);
 
@@ -119,7 +123,7 @@ class imageFind {
     //      const firstElem = data.hits[0].id;
 
     //      refs.list.insertAdjacentHTML('beforeend', renderCards(data));
-    //      this.removeDisabledLoadMore();
+    //      this.disableLoadMore();
 
     //      elemForScroll(firstElem);
     //    })
