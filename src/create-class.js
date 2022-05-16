@@ -60,7 +60,7 @@ class imageFind {
     }
   }
 
-  onSubmit(e) {
+  onSubmit = e => {
     e.preventDefault();
     const query = e.currentTarget.query.value;
     const normalizedQuery = this.normalizeQuery(query);
@@ -68,12 +68,17 @@ class imageFind {
       alert('Error', "The string isn't should be empty");
       return;
     }
+    if (query === this.valueInputForm) {
+      alert("The same request", 'Enter anything another');
+      e.currentTarget.reset();
+      return;
+    }
+    this.valueInputForm = this.normalizeQuery(e.currentTarget.query.value);
     refs.list.innerHTML = '';
     this.makeVisibleLoadMore();
     refs.form.classList.add('transparent');
     this.disableLoadMore();
     this.resetPage();
-    this.valueInputForm = e.currentTarget.query.value.trim();
     const urlParams = this.getUrlParams();
 
     this.renderImage(`${this.BASE_URL}?${urlParams}`);
@@ -92,7 +97,7 @@ class imageFind {
     //       this.makeVisibleLoadMore();
     //     });
     e.currentTarget.reset();
-  }
+  };
 
   async renderImageLoadMore(url) {
     try {
@@ -107,7 +112,7 @@ class imageFind {
     }
   }
 
-  handleLoadMore() {
+  handleLoadMore = () => {
     if (!this.valueInputForm) {
       alert('Error', "The string isn't should be empty");
       return;
@@ -128,7 +133,7 @@ class imageFind {
     //      elemForScroll(firstElem);
     //    })
     //    .catch(err => alert('Finish', 'Not Found'));
-  }
+  };
 
   async loadLargeImg(url) {
     try {
@@ -140,7 +145,7 @@ class imageFind {
     }
   }
 
-  onImage(e) {
+  onImage = e => {
     if (e.target.nodeName !== 'IMG') {
       return;
     }
@@ -156,13 +161,13 @@ class imageFind {
     //      openLargeImg(largeURL);
     //    })
     //    .catch(console.log);
-  }
+  };
 }
 
 const img = new imageFind({
   per_page: 12,
 });
 
-refs.form.addEventListener('submit', img.onSubmit.bind(img));
-refs.loadMore.addEventListener('click', img.handleLoadMore.bind(img));
-refs.list.addEventListener('click', img.onImage.bind(img));
+refs.form.addEventListener('submit', img.onSubmit);
+refs.loadMore.addEventListener('click', img.handleLoadMore);
+refs.list.addEventListener('click', img.onImage);
